@@ -79,5 +79,19 @@ function fish_prompt -d "Simple Fish Prompt"
         end
     end
 
+    if test "$fish_key_bindings" = "fish_vi_key_bindings"
+        or test "$fish_key_bindings" = "fish_hybrid_key_bindings"
+        switch "$fish_bind_mode"
+            case default
+            __print_color FF7676 "\n"
+            case insert
+            __print_color 6597ca "\n"
+            case replace-one
+            __print_color 5DAE8B "\n"
+            case visual
+            __print_color F6F49D "\n"
+        end
+    end
+
     __print_color FF7676 "\e[K\n❯ "
 end
