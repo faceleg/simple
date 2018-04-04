@@ -11,7 +11,7 @@ function __git_current_remote
    set -l current_branch (git_branch_name)
    set -l remote (git config --get-regexp "branch\.$current_branch\.remote" | sed -e "s/^.* //")
    set -l remote_branch (git config --get-regexp "branch\.$current_branch\.merge" | \
-     sed -e "s/^.* //" -e "s/refs\/.*\///")
+     sed "s/^.*refs\/heads\///")
 
    printf "$current_branch -> "
    if test -n "$remote"
@@ -32,6 +32,20 @@ end
 
 function fish_prompt -d "Simple Fish Prompt"
     echo -e ""
+
+    if test "$fish_key_bindings" = "fish_vi_key_bindings"
+        or test "$fish_key_bindings" = "fish_hybrid_key_bindings"
+        switch "$fish_bind_mode"
+            case default
+            __print_color 5DAE8B "N "
+            case insert
+            __print_color 6597ca "I "
+            case replace_one
+            __print_color FF7676 "R "
+            case visual
+            __print_color F6F49D "V "
+        end
+    end
 
     # User
     #
@@ -90,20 +104,6 @@ function fish_prompt -d "Simple Fish Prompt"
              if test ! -z "$git_ahead"
                 __print_color 5DAE8B " $git_ahead"
             end
-        end
-    end
-
-    if test "$fish_key_bindings" = "fish_vi_key_bindings"
-        or test "$fish_key_bindings" = "fish_hybrid_key_bindings"
-        switch "$fish_bind_mode"
-            case default
-            __print_color FF7676 "\n"
-            case insert
-            __print_color 6597ca "\n"
-            case replace-one
-            __print_color 5DAE8B "\n"
-            case visual
-            __print_color F6F49D "\n"
         end
     end
 
