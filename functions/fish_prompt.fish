@@ -7,6 +7,20 @@ function __git_upstream_configured
     git rev-parse --abbrev-ref @"{u}" > /dev/null 2>&1
 end
 
+function __git_current_remote
+   set -l current_branch (git_branch_name)
+   set -l remote (git config --get-regexp "branch\.$current_branch\.remote" | sed -e "s/^.* //")
+   set -l remote_branch (git config --get-regexp "branch\.$current_branch\.merge" | \
+     sed -e "s/^.* //" -e "s/refs\/.*\///")
+
+   printf "$current_branch -> "
+   if test -n "$remote"
+     printf "$remote/$remote_branch"
+   else
+     printf "not pushed"
+   end
+end
+
 function __print_color
     set -l color  $argv[1]
     set -l string $argv[2]
@@ -46,12 +60,12 @@ function fish_prompt -d "Simple Fish Prompt"
     # Git
     #
     if git_is_repo
-        set -l branch_name (git_branch_name)
+        set -l current_remote (__git_current_remote)
         set -l git_glyph " on "
         set -l git_branch_glyph
 
         __print_color ffffff "$git_glyph"
-        __print_color 6597ca "$branch_name"
+        __print_color 6597ca "$current_remote"
 
         if git_is_touched
             if git_is_staged
