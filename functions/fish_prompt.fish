@@ -15,7 +15,11 @@ function __git_current_remote
 
    printf "$current_branch -> "
    if test -n "$remote"
-     printf "$remote/$remote_branch"
+     if [ "$current_branch" = "$remote_branch" ]
+       printf "$remote"
+     else
+       printf "$remote/$remote_branch"
+     end
    else
      printf "not pushed"
    end
@@ -65,7 +69,7 @@ function fish_prompt -d "Simple Fish Prompt"
     # Current working directory
     #
     set -l pwd_glyph " in "
-    set -l pwd_string (echo $PWD | sed 's|^'$HOME'\(.*\)$|~\1|')
+    set -l pwd_string (prompt_pwd | sed 's|^'$HOME'\(.*\)$|~\1|')
 
     __print_color ffffff "$pwd_glyph"
     __print_color 5DAE8B "$pwd_string"
