@@ -35,26 +35,34 @@ function __print_color
 end
 
 function fish_prompt -d "Simple Fish Prompt"
+    set -l last_command_status $status
+
+    set -l colour_green 5DAE8B
+    set -l colour_white FFFFFF
+    set -l colour_blue 6597ca
+    set -l colour_red FF7676
+    set -l colour_yellow F6F49D
+
     echo -e ""
 
     if test "$fish_key_bindings" = "fish_vi_key_bindings"
         or test "$fish_key_bindings" = "fish_hybrid_key_bindings"
         switch "$fish_bind_mode"
             case default
-            __print_color 5DAE8B "N "
+            __print_color $colour_green "N "
             case insert
-            __print_color 6597ca "I "
+            __print_color $colour_blue "I "
             case replace_one
-            __print_color FF7676 "R "
+            __print_color $colour_red "R "
             case visual
-            __print_color F6F49D "V "
+            __print_color $colour_yellow "V "
         end
     end
 
     # User
     #
     set -l user (id -un $USER)
-    __print_color FF7676 "$user"
+    __print_color $colour_red "$user"
 
 
     # Host
@@ -62,8 +70,8 @@ function fish_prompt -d "Simple Fish Prompt"
     set -l host_name (hostname -s)
     set -l host_glyph " at "
 
-    __print_color ffffff "$host_glyph"
-    __print_color F6F49D "$host_name"
+    __print_color $colour_white "$host_glyph"
+    __print_color $colour_yellow "$host_name"
 
 
     # Current working directory
@@ -71,8 +79,8 @@ function fish_prompt -d "Simple Fish Prompt"
     set -l pwd_glyph " in "
     set -l pwd_string (prompt_pwd | sed 's|^'$HOME'\(.*\)$|~\1|')
 
-    __print_color ffffff "$pwd_glyph"
-    __print_color 5DAE8B "$pwd_string"
+    __print_color $colour_white "$pwd_glyph"
+    __print_color $colour_green "$pwd_string"
 
 
     # Git
@@ -82,8 +90,8 @@ function fish_prompt -d "Simple Fish Prompt"
         set -l git_glyph " on "
         set -l git_branch_glyph
 
-        __print_color ffffff "$git_glyph"
-        __print_color 6597ca "$current_remote"
+        __print_color $colour_white "$git_glyph"
+        __print_color $colour_blue "$current_remote"
 
         if git_is_touched
             if git_is_staged
@@ -97,7 +105,7 @@ function fish_prompt -d "Simple Fish Prompt"
             end
         end
 
-        __print_color 6597ca "$git_branch_glyph"
+        __print_color $colour_blue "$git_branch_glyph"
 
         if __git_upstream_configured
              set -l git_ahead (command git rev-list --left-right --count HEAD...@"{u}" ^ /dev/null | awk '
@@ -106,10 +114,18 @@ function fish_prompt -d "Simple Fish Prompt"
              ')
 
              if test ! -z "$git_ahead"
-                __print_color 5DAE8B " $git_ahead"
+                __print_color $colour_green " $git_ahead"
             end
         end
     end
 
-    __print_color FF7676 "\e[K\n❯ "
+    __print_color $colour_white "\e[K\n"
+    if test $last_command_status -ne 0
+      __print_color $colour_white "["
+      __print_color $colour_red "$last_command_status"
+      __print_color $colour_white "] "
+      __print_color $colour_red "❯ "
+    else
+      __print_color $colour_red "❯ "
+    end
 end
